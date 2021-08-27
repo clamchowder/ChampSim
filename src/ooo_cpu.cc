@@ -733,6 +733,8 @@ void O3_CPU::decode_and_dispatch()
 	{
 	  break;
 	}
+
+    if (ROB.occupancy == ROB.SIZE) rob_full++;
       
       if(((!warmup_complete[cpu]) && (ROB.occupancy < ROB.SIZE)) ||
 	 ((DECODE_BUFFER.entry[DECODE_BUFFER.head].event_cycle != 0) && (DECODE_BUFFER.entry[DECODE_BUFFER.head].event_cycle < current_core_cycle[cpu]) && (ROB.occupancy < ROB.SIZE)))
@@ -1160,6 +1162,7 @@ uint32_t O3_CPU::check_and_add_lsq(uint32_t rob_index)
             }
             else {
                 DP(if(warmup_complete[cpu]) {
+                    lq_full++;
                 cout << "[LQ] " << __func__ << " instr_id: " << ROB.entry[rob_index].instr_id;
                 cout << " cannot be added in the load queue occupancy: " << LQ.occupancy << " cycle: " << current_core_cycle[cpu] << endl; });
             }
@@ -1182,6 +1185,7 @@ uint32_t O3_CPU::check_and_add_lsq(uint32_t rob_index)
             }
             else {
                 DP(if(warmup_complete[cpu]) {
+                    sq_full++;
                 cout << "[SQ] " << __func__ << " instr_id: " << ROB.entry[rob_index].instr_id;
                 cout << " cannot be added in the store queue occupancy: " << SQ.occupancy << " cycle: " << current_core_cycle[cpu] << endl; });
             }

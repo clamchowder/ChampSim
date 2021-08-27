@@ -17,7 +17,7 @@ using namespace std;
 #define DECODE_WIDTH 6
 #define EXEC_WIDTH 8
 #define LQ_WIDTH 3
-#define SQ_WIDTH 1
+#define SQ_WIDTH 2
 #define RETIRE_WIDTH 8
 #define SCHEDULER_SIZE 96 // counting int only, zen 3 has 96 int + 64 fp = 160 total
 #define BRANCH_MISPREDICT_PENALTY 1
@@ -80,6 +80,7 @@ class O3_CPU {
     uint64_t fetch_resume_cycle;
     uint64_t num_branch, branch_mispredictions;
     uint64_t total_rob_occupancy_at_branch_mispredict;
+    uint64_t rob_full, lq_full, sq_full;
   uint64_t total_branch_types[8];
 
     // TLBs and caches
@@ -129,6 +130,9 @@ class O3_CPU {
 	fetch_resume_cycle = 0;
         num_branch = 0;
         branch_mispredictions = 0;
+        lq_full = 0;
+        sq_full = 0;
+        rob_full = 0;
 	for(uint32_t i=0; i<8; i++)
 	  {
 	    total_branch_types[i] = 0;
