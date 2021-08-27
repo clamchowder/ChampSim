@@ -16,8 +16,8 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define IS_LLC  6
 
 // INSTRUCTION TLB
-#define ITLB_SET 16
-#define ITLB_WAY 4
+#define ITLB_SET 64
+#define ITLB_WAY 64
 #define ITLB_RQ_SIZE 16
 #define ITLB_WQ_SIZE 16
 #define ITLB_PQ_SIZE 0
@@ -25,8 +25,8 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define ITLB_LATENCY 1
 
 // DATA TLB
-#define DTLB_SET 16
-#define DTLB_WAY 4
+#define DTLB_SET 64
+#define DTLB_WAY 64
 #define DTLB_RQ_SIZE 16
 #define DTLB_WQ_SIZE 16
 #define DTLB_PQ_SIZE 0
@@ -34,8 +34,8 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define DTLB_LATENCY 1
 
 // SECOND LEVEL TLB
-#define STLB_SET 128
-#define STLB_WAY 12
+#define STLB_SET 256
+#define STLB_WAY 8
 #define STLB_RQ_SIZE 32
 #define STLB_WQ_SIZE 32
 #define STLB_PQ_SIZE 0
@@ -48,17 +48,17 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define L1I_RQ_SIZE 64
 #define L1I_WQ_SIZE 64 
 #define L1I_PQ_SIZE 32
-#define L1I_MSHR_SIZE 8
+#define L1I_MSHR_SIZE 16 
 #define L1I_LATENCY 4
 
 // L1 DATA CACHE
 #define L1D_SET 64
-#define L1D_WAY 12
+#define L1D_WAY 8
 #define L1D_RQ_SIZE 64
 #define L1D_WQ_SIZE 64 
 #define L1D_PQ_SIZE 8
-#define L1D_MSHR_SIZE 16
-#define L1D_LATENCY 5 
+#define L1D_MSHR_SIZE 24
+#define L1D_LATENCY 4
 
 // L2 CACHE
 #define L2C_SET 1024
@@ -66,17 +66,26 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define L2C_RQ_SIZE 32
 #define L2C_WQ_SIZE 32
 #define L2C_PQ_SIZE 16
-#define L2C_MSHR_SIZE 32
-#define L2C_LATENCY 10  // 4/5 (L1I or L1D) + 10 = 14/15 cycles
+#define L2C_MSHR_SIZE 64 // like zen 3
+#define L2C_LATENCY 8  // 4/4 (L1I or L1D) + 8 = 12 cycles
 
 // LAST LEVEL CACHE
-#define LLC_SET NUM_CPUS*2048
+/*#define LLC_SET NUM_CPUS*2048
 #define LLC_WAY 16
 #define LLC_RQ_SIZE NUM_CPUS*L2C_MSHR_SIZE //48
 #define LLC_WQ_SIZE NUM_CPUS*L2C_MSHR_SIZE //48
 #define LLC_PQ_SIZE NUM_CPUS*32
 #define LLC_MSHR_SIZE NUM_CPUS*64
-#define LLC_LATENCY 20  // 4/5 (L1I or L1D) + 10 + 20 = 34/35 cycles
+#define LLC_LATENCY 20  // 4/5 (L1I or L1D) + 10 + 20 = 34/35 cycles*/
+
+// 8M L3
+#define LLC_SET 4*2048
+#define LLC_WAY 16
+#define LLC_RQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
+#define LLC_WQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
+#define LLC_PQ_SIZE NUM_CPUS*32
+#define LLC_MSHR_SIZE 192 // zen 3 supports 192 misses from L3 to mem per 8c ccx
+#define LLC_LATENCY 34  // 12 + 34 = 46 cycles (like zen 3)
 
 class CACHE : public MEMORY {
   public:

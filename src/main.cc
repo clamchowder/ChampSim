@@ -45,6 +45,9 @@ void print_roi_stats(uint32_t cpu, CACHE *cache)
     }
 
     cout << cache->NAME;
+    cout << " HITRATE: " << (float)TOTAL_HIT / TOTAL_ACCESS << endl;
+
+    cout << cache->NAME;
     cout << " TOTAL     ACCESS: " << setw(10) << TOTAL_ACCESS << "  HIT: " << setw(10) << TOTAL_HIT << "  MISS: " << setw(10) << TOTAL_MISS << endl;
 
     cout << cache->NAME;
@@ -926,7 +929,7 @@ int main(int argc, char** argv)
         cout << endl << "Total Simulation Statistics (not including warmup)" << endl;
         for (uint32_t i=0; i<NUM_CPUS; i++) {
             cout << endl << "CPU " << i << " cumulative IPC: " << (float) (ooo_cpu[i].num_retired - ooo_cpu[i].begin_sim_instr) / (current_core_cycle[i] - ooo_cpu[i].begin_sim_cycle); 
-            cout << " instructions: " << ooo_cpu[i].num_retired - ooo_cpu[i].begin_sim_instr << " cycles: " << current_core_cycle[i] - ooo_cpu[i].begin_sim_cycle << endl;
+            cout << " : instructions: " << ooo_cpu[i].num_retired - ooo_cpu[i].begin_sim_instr << " cycles: " << current_core_cycle[i] - ooo_cpu[i].begin_sim_cycle << endl;
 #ifndef CRC2_COMPILE
             print_sim_stats(i, &ooo_cpu[i].L1D);
             print_sim_stats(i, &ooo_cpu[i].L1I);
@@ -943,7 +946,7 @@ int main(int argc, char** argv)
     cout << endl << "Region of Interest Statistics" << endl;
     for (uint32_t i=0; i<NUM_CPUS; i++) {
         cout << endl << "CPU " << i << " cumulative IPC: " << ((float) ooo_cpu[i].finish_sim_instr / ooo_cpu[i].finish_sim_cycle); 
-        cout << " instructions: " << ooo_cpu[i].finish_sim_instr << " cycles: " << ooo_cpu[i].finish_sim_cycle << endl;
+        cout << " : instructions: " << ooo_cpu[i].finish_sim_instr << " cycles: " << ooo_cpu[i].finish_sim_cycle << endl;
 #ifndef CRC2_COMPILE
         print_roi_stats(i, &ooo_cpu[i].L1D);
         print_roi_stats(i, &ooo_cpu[i].L1I);

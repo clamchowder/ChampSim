@@ -15,11 +15,11 @@ using namespace std;
 // CORE PROCESSOR
 #define FETCH_WIDTH 6
 #define DECODE_WIDTH 6
-#define EXEC_WIDTH 6
-#define LQ_WIDTH 2
-#define SQ_WIDTH 2
-#define RETIRE_WIDTH 4
-#define SCHEDULER_SIZE 128
+#define EXEC_WIDTH 8
+#define LQ_WIDTH 3
+#define SQ_WIDTH 1
+#define RETIRE_WIDTH 8
+#define SCHEDULER_SIZE 96 // counting int only, zen 3 has 96 int + 64 fp = 160 total
 #define BRANCH_MISPREDICT_PENALTY 1
 //#define SCHEDULING_LATENCY 0
 //#define EXEC_LATENCY 0
@@ -53,7 +53,7 @@ class O3_CPU {
     uint32_t next_ITLB_fetch;
 
     // reorder buffer, load/store queue, register file
-    CORE_BUFFER IFETCH_BUFFER{"IFETCH_BUFFER", FETCH_WIDTH*2};
+    CORE_BUFFER IFETCH_BUFFER{"IFETCH_BUFFER", FETCH_WIDTH*10};
     CORE_BUFFER DECODE_BUFFER{"DECODE_BUFFER", DECODE_WIDTH*3};
     CORE_BUFFER ROB{"ROB", ROB_SIZE};
     LOAD_STORE_QUEUE LQ{"LQ", LQ_SIZE}, SQ{"SQ", SQ_SIZE};
