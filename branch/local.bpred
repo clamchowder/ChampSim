@@ -1,0 +1,61 @@
+#include "ooo_cpu.h"
+
+#define LOCAL_HISTORY_LENGTH 8
+#define LOCAL_HISTORY_COUNTERS (1 << LOCAL_HISTORY_LENGTH)
+#define LOCAL_HISTORY_MASK (LOCAL_HISTORY_COUNTERS - 1)
+
+// must be power of 2
+#define HISTORY_TABLE_SIZE 2048
+int history_table[NUM_CPUS][HISTORY_TABLE_SIZE][LOCAL_HISTORY_COUNTERS];
+int local_history_vector[NUM_CPUS][HISTORY_TABLE_SIZE];
+
+void O3_CPU::initialize_branch_predictor()
+{
+    cout << "CPU " << cpu << " LOCAL branch predictor" << endl;
+
+    for(int i=0; i< HISTORY_TABLE_SIZE; i++) {
+      local_history_vector[cpu][i] = 0;
+      for (int j = 0; j < LOCAL_HISTORY_COUNTERS; j++)
+        history_table[cpu][i][j] = 2; // 2 is slightly taken
+    }
+}
+
+int bht_hash(uint64_t ip){
+  return ip & (HISTORY_TABLE_SIZE - 1);
+}
+
+uint8_t O3_CPU::predict_branch(uint64_t ip)
+{
+    int prediction = 1;
+    int ip_hash = bht_hash(ip);
+    int vector = local_history_vector[cpu][ip_hash];
+
+    // index into history table with low bits of IP
+    // then use history vector to select a counter
+    if(history_table[cpu][ip_hash][vector] >= 2)
+        prediction = 1;
+    else
+        prediction = 0;
+
+    return prediction;
+}
+
+void O3_CPU::last_branch_result(uint64_t ip, uint8_t taken)
+{
+    int ip_hash = bht_hash(ip);
+    int index = ip % HISTORY_TABLE_SIZE;
+    int vector = local_history_vector[cpu][ip_hash];
+
+    if(taken == 1) {
+        if(history_table[cpu][ip_hash][vector] < 3)
+            history_table[cpu][ip_hash][vector]++;
+    } else {
+        if(history_table[cpu][ip_hash][vector] > 0)
+            history_table[cpu][ip_hash][vector]--;
+    }
+
+    // update branch history vector
+    local_history_vector[cpu][ip_hash] <<= 1;
+    local_history_vector[cpu][ip_hash] &= LOCAL_HISTORY_MASK;
+    local_history_vector[cpu][ip_hash] |= taken;
+}
