@@ -10,7 +10,8 @@ int my_last_prediction[NUM_CPUS];
 
 void O3_CPU::initialize_branch_predictor()
 {
-    cout << "CPU " << cpu << " GSHARE branch predictor" << endl;
+    cout << "CPU " << cpu << " GSHARE branch predictor, " << GLOBAL_HISTORY_LENGTH << " history len, ";
+    cout << GS_HISTORY_TABLE_SIZE << " history table entries" << endl;
 
     branch_history_vector[cpu] = 0;
     my_last_prediction[cpu] = 0;
