@@ -1,0 +1,183 @@
+#include "ooo_cpu.h"
+
+#define LOCAL_HISTORY_LENGTH 8
+#define LOCAL_HISTORY_COUNTERS (1 << LOCAL_HISTORY_LENGTH)
+#define LOCAL_HISTORY_MASK (LOCAL_HISTORY_COUNTERS - 1)
+
+// must be power of 2
+#define HISTORY_TABLE_SIZE 2048
+int history_table[NUM_CPUS][HISTORY_TABLE_SIZE][LOCAL_HISTORY_COUNTERS];
+int local_history_vector[NUM_CPUS][HISTORY_TABLE_SIZE];
+
+#define GLOBAL_HISTORY_LENGTH 14
+#define GLOBAL_HISTORY_MASK (1 << GLOBAL_HISTORY_LENGTH) - 1
+#define GS_HISTORY_TABLE_SIZE 16384 
+int branch_history_vector[NUM_CPUS];
+int gs_history_table[NUM_CPUS][GS_HISTORY_TABLE_SIZE]; 
+
+
+// must be power of 2
+#define CHOICE_TABLE_SIZE 8192
+int choice_table[NUM_CPUS][CHOICE_TABLE_SIZE];
+
+#define AGREE_TABLE_SIZE 8192
+int agree_table[NUM_CPUS][AGREE_TABLE_SIZE];
+
+void O3_CPU::initialize_branch_predictor()
+{
+    cout << "CPU " << cpu << " SELF CONFIDENCE ISSUES branch predictor:" << endl;
+    cout << "  " << LOCAL_HISTORY_LENGTH << " local history bits, " << HISTORY_TABLE_SIZE << " entry local BHT" << endl;
+    cout << "  " << GLOBAL_HISTORY_LENGTH << " global history bits, " << GS_HISTORY_TABLE_SIZE << " gshare BHT" << endl;
+    cout << "  " << CHOICE_TABLE_SIZE << " entry meta predictor" << endl;
+    cout << "  " << AGREE_TABLE_SIZE << " entry agree predictor" << endl;
+
+    for(int i=0; i< HISTORY_TABLE_SIZE; i++) {
+      local_history_vector[cpu][i] = 0;
+      for (int j = 0; j < LOCAL_HISTORY_COUNTERS; j++)
+        history_table[cpu][i][j] = 2; // 2 is slightly taken
+    }
+    
+    branch_history_vector[cpu] = 0;
+    for(int i=0; i<GS_HISTORY_TABLE_SIZE; i++)
+      gs_history_table[cpu][i] = 2; // 2 is slightly taken 
+
+    for(int i = 0;i < CHOICE_TABLE_SIZE; i++) 
+      choice_table[cpu][i] = 1; // weakly prefer local history
+
+    for(int i = 0;i < AGREE_TABLE_SIZE; i++)
+      agree_table[cpu][i] = 3; // start by agreeing with yourself
+}
+unsigned int gs_table_hash(uint64_t ip, int bh_vector)
+{
+    unsigned int hash = ip^(ip>>GLOBAL_HISTORY_LENGTH)^(ip>>(GLOBAL_HISTORY_LENGTH*2))^bh_vector;
+    hash = hash%GS_HISTORY_TABLE_SIZE;
+
+    return hash;
+}
+
+int bht_hash(uint64_t ip){
+  return ip & (HISTORY_TABLE_SIZE - 1);
+}
+
+int ct_hash(uint64_t ip) {
+  return ip & (CHOICE_TABLE_SIZE - 1);
+}
+
+int agree_hash(uint64_t ip) {
+  return ip & (AGREE_TABLE_SIZE - 1);
+}
+
+// make prediction with local history
+uint8_t local_prediction(uint64_t ip, uint32_t cpu) {
+    int local_prediction = 1;
+    int ip_hash = bht_hash(ip);
+    int vector = local_history_vector[cpu][ip_hash];
+
+    // index into history table with low bits of IP
+    // then use history vector to select a counter
+    if(history_table[cpu][ip_hash][vector] >= 2)
+        local_prediction = 1;
+    else
+        local_prediction = 0; 
+
+    return local_prediction;
+}
+
+// make prediction with global history
+uint8_t global_prediction(uint64_t ip, uint32_t cpu) {
+    int prediction = 1;
+
+    int gs_hash = gs_table_hash(ip, branch_history_vector[cpu]);
+
+    if(gs_history_table[cpu][gs_hash] >= 2)
+        prediction = 1;
+    else
+        prediction = 0;
+
+    return prediction;  
+}
+
+// make prediction using meta predictor to choose
+// between local and global history
+uint8_t meta_prediction(uint64_t ip, uint32_t cpu) {
+   int prediction = 1;
+   int ct_index = ct_hash(ip);
+   int choice = choice_table[cpu][ct_index];
+   if (choice >= 2) 
+     prediction = global_prediction(ip, cpu);
+   else
+     prediction = local_prediction(ip, cpu); 
+   return prediction;
+}
+
+uint8_t O3_CPU::predict_branch(uint64_t ip)
+{
+    int prediction = 1;
+    int agree = agree_table[cpu][agree_hash(ip)];
+    prediction = meta_prediction(ip, cpu);
+
+    if (agree < 2) prediction = !prediction;
+
+    return prediction;
+}
+
+void O3_CPU::last_branch_result(uint64_t ip, uint8_t taken)
+{
+    // so who won?
+    int local_pred = local_prediction(ip, cpu);
+    int global_pred = global_prediction(ip, cpu);
+    int agree_index = agree_hash(ip);
+
+    // update the agree table
+    // if we suck at the meta predictor stage, lose self confidence
+    int prediction = meta_prediction(ip, cpu);
+    if(prediction != taken && agree_table[cpu][agree_index] > 0) {
+      agree_table[cpu][agree_index]--;
+    } 
+    // get more confident if we are good-ish
+    else if (prediction == taken && agree_table[cpu][agree_index] < 3) {
+      agree_table[cpu][agree_index]++;
+    }
+    
+    // if the two predictions disagreed, update choice table
+    if (local_pred != global_pred) {
+      int ct_index = ct_hash(ip);
+      // increment 2-bit saturating counter if the global one was right
+      // or decrement otherwise (if the local one was right)
+      if ((taken == global_pred) && (choice_table[cpu][ct_index] < 3))
+        choice_table[cpu][ct_index]++;
+      else if (choice_table[cpu][ct_index] > 0)
+        choice_table[cpu][ct_index]--;
+    } // leave choice table untouched if predictions agreed
+
+    // update both predictors, starting with local history
+    int ip_hash = bht_hash(ip);
+    int vector = local_history_vector[cpu][ip_hash];
+
+    if(taken == 1) {
+        if(history_table[cpu][ip_hash][vector] < 3)
+            history_table[cpu][ip_hash][vector]++;
+    } else {
+        if(history_table[cpu][ip_hash][vector] > 0)
+            history_table[cpu][ip_hash][vector]--;
+    }
+
+    local_history_vector[cpu][ip_hash] <<= 1;
+    local_history_vector[cpu][ip_hash] &= LOCAL_HISTORY_MASK;
+    local_history_vector[cpu][ip_hash] |= taken;
+
+    // and update global history too
+    int gs_hash = gs_table_hash(ip, branch_history_vector[cpu]);
+
+    if(taken == 1) {
+        if(gs_history_table[cpu][gs_hash] < 3)
+            gs_history_table[cpu][gs_hash]++;
+    } else {
+        if(gs_history_table[cpu][gs_hash] > 0)
+            gs_history_table[cpu][gs_hash]--;
+    }
+
+    branch_history_vector[cpu] <<= 1;
+    branch_history_vector[cpu] &= GLOBAL_HISTORY_MASK;
+    branch_history_vector[cpu] |= taken; 
+}
