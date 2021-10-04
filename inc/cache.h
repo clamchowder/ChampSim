@@ -78,14 +78,14 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define LLC_MSHR_SIZE NUM_CPUS*64
 #define LLC_LATENCY 20  // 4/5 (L1I or L1D) + 10 + 20 = 34/35 cycles*/
 
-// 8M L3
-#define LLC_SET 4*2048
-#define LLC_WAY 16
+// 256M L3
+#define LLC_SET 64*2048
+#define LLC_WAY 32
 #define LLC_RQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
 #define LLC_WQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
 #define LLC_PQ_SIZE NUM_CPUS*32
 #define LLC_MSHR_SIZE 192 // zen 3 supports 192 misses from L3 to mem per 8c ccx
-#define LLC_LATENCY 34  // 12 + 34 = 46 cycles (like zen 3)
+#define LLC_LATENCY 48  // 12 + 48 = 60 cycles (like IBM Telum)
 
 class CACHE : public MEMORY {
   public:
