@@ -43,31 +43,31 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define STLB_LATENCY 8
 
 // L1 INSTRUCTION CACHE
-#define L1I_SET 64
-#define L1I_WAY 8
+#define L1I_SET 256
+#define L1I_WAY 12
 #define L1I_RQ_SIZE 64
 #define L1I_WQ_SIZE 64 
 #define L1I_PQ_SIZE 32
 #define L1I_MSHR_SIZE 16
-#define L1I_LATENCY 4
+#define L1I_LATENCY 3
 
 // L1 DATA CACHE
-#define L1D_SET 64
+#define L1D_SET 256
 #define L1D_WAY 8
 #define L1D_RQ_SIZE 64
 #define L1D_WQ_SIZE 64 
 #define L1D_PQ_SIZE 8
 #define L1D_MSHR_SIZE 24
-#define L1D_LATENCY 4
+#define L1D_LATENCY 3
 
 // L2 CACHE
-#define L2C_SET 1024
-#define L2C_WAY 8
+#define L2C_SET 8192
+#define L2C_WAY 24
 #define L2C_RQ_SIZE 32
 #define L2C_WQ_SIZE 32
 #define L2C_PQ_SIZE 16
 #define L2C_MSHR_SIZE 64 // like zen 3
-#define L2C_LATENCY 8  // 4/4 (L1I or L1D) + 8 = 12 cycles
+#define L2C_LATENCY 14  // 3 + 14 = 17 cycles
 
 // LAST LEVEL CACHE
 /*#define LLC_SET NUM_CPUS*2048
@@ -78,14 +78,14 @@ extern uint32_t PAGE_TABLE_LATENCY, SWAP_LATENCY;
 #define LLC_MSHR_SIZE NUM_CPUS*64
 #define LLC_LATENCY 20  // 4/5 (L1I or L1D) + 10 + 20 = 34/35 cycles*/
 
-// 32M L3
-#define LLC_SET 16*2048
-#define LLC_WAY 16
+// 16M SLC
+#define LLC_SET 4*2048
+#define LLC_WAY 32
 #define LLC_RQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
 #define LLC_WQ_SIZE NUM_CPUS*L2C_MSHR_SIZE 
 #define LLC_PQ_SIZE NUM_CPUS*32
 #define LLC_MSHR_SIZE 192 // zen 3 supports 192 misses from L3 to mem per 8c ccx
-#define LLC_LATENCY 34  // 12 + 34 = 46 cycles from zen 3 opt guide
+#define LLC_LATENCY 44  // 17 + 44 = 61 cycles (19 ns at 3.2 ghz)
 
 class CACHE : public MEMORY {
   public:

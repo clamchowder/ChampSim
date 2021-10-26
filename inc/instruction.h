@@ -5,7 +5,7 @@
 // instruction format
 #define ROB_SIZE 256
 #define LQ_SIZE 114 // Zen 2 seems to have one at least this big
-#define SQ_SIZE 44
+#define SQ_SIZE 64
 #define NUM_INSTR_DESTINATIONS_SPARC 4
 #define NUM_INSTR_DESTINATIONS 2
 #define NUM_INSTR_SOURCES 4
