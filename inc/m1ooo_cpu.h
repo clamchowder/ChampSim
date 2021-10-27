@@ -19,7 +19,7 @@ using namespace std;
 #define LQ_WIDTH 3
 #define SQ_WIDTH 2
 #define RETIRE_WIDTH 56
-#define SCHEDULER_SIZE 96 // counting int only, M1 has 24+26+16+12+28+28 + 48 = 182
+#define SCHEDULER_SIZE 182 // counting int only, M1 has 24+26+16+12+28+28 + 48 = 182
 #define BRANCH_MISPREDICT_PENALTY 1
 //#define SCHEDULING_LATENCY 0
 //#define EXEC_LATENCY 0
