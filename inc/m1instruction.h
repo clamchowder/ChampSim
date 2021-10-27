@@ -4,7 +4,7 @@
 
 // instruction format
 // roughly M1 sized, from https://pbs.twimg.com/media/ExFVZoiU8AAfeH6?format=jpg&name=large
-#define ROB_SIZE 623
+#define ROB_SIZE 512  // deadlock issue with larger ROB sizes
 #define LQ_SIZE 130 
 #define SQ_SIZE 60
 #define NUM_INSTR_DESTINATIONS_SPARC 4
