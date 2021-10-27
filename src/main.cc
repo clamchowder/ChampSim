@@ -948,6 +948,8 @@ int main(int argc, char** argv)
         cout << endl << "CPU " << i << " cumulative IPC: " << ((float) ooo_cpu[i].finish_sim_instr / ooo_cpu[i].finish_sim_cycle); 
         cout << " : instructions: " << ooo_cpu[i].finish_sim_instr << " cycles: " << ooo_cpu[i].finish_sim_cycle << endl;
         cout << "rob full %: " << 100*((float)ooo_cpu[i].rob_full / ooo_cpu[i].finish_sim_cycle) << endl;
+        cout << "sq full %: " << 100*((float)ooo_cpu[i].sq_full / ooo_cpu[i].finish_sim_cycle) << endl;
+        cout << "lq full %: " << 100*((float)ooo_cpu[i].lq_full / ooo_cpu[i].finish_sim_cycle) << endl;
 #ifndef CRC2_COMPILE
         print_roi_stats(i, &ooo_cpu[i].L1D);
         print_roi_stats(i, &ooo_cpu[i].L1I);
