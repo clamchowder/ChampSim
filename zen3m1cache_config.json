@@ -39,8 +39,8 @@
     },
 
     "L1I": {
-        "sets": 64,
-        "ways": 8,
+        "sets": 256,
+        "ways": 12,
         "rq_size": 64,
         "wq_size": 64,
         "pq_size": 32,
@@ -54,7 +54,7 @@
     },
 
     "L1D": {
-        "sets": 64,
+        "sets": 256,
         "ways": 8,
         "rq_size": 64,
         "wq_size": 64,
@@ -69,8 +69,8 @@
     },
 
     "L2C": {
-        "sets": 1024,
-        "ways": 8,
+        "sets": 8192,
+        "ways": 24,
         "rq_size": 32,
         "wq_size": 32,
         "pq_size": 16,
@@ -138,13 +138,13 @@
 	},
 
     "LLC": {
-        "sets": 32768,
-        "ways": 16,
+        "sets": 8192,
+        "ways": 32,
         "rq_size": 32,
         "wq_size": 32,
         "pq_size": 32,
         "mshr_size": 192,
-        "latency": 34,
+        "latency": 44,
         "max_read": 1,
         "max_write": 1,
         "prefetch_as_load": false,
