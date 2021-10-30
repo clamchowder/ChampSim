@@ -1,5 +1,5 @@
 {
-    "executable_name": "bin/m1",
+    "executable_name": "bin/m1core_zen3cache",
     "block_size": 64,
     "page_size": 4096,
     "heartbeat_frequency": 10000000,
@@ -39,13 +39,13 @@
     },
 
     "L1I": {
-        "sets": 256,
-        "ways": 12,
+        "sets": 64,
+        "ways": 8,
         "rq_size": 64,
         "wq_size": 64,
         "pq_size": 32,
         "mshr_size": 16,
-        "latency": 3,
+        "latency": 4,
         "max_read": 2,
         "max_write": 2,
         "prefetch_as_load": false,
@@ -54,13 +54,13 @@
     },
 
     "L1D": {
-        "sets": 256,
+        "sets": 64,
         "ways": 8,
         "rq_size": 64,
         "wq_size": 64,
         "pq_size": 8,
         "mshr_size": 24,
-        "latency": 3,
+        "latency": 4,
         "max_read": 3,
         "max_write": 2,
         "prefetch_as_load": false,
@@ -69,13 +69,13 @@
     },
 
     "L2C": {
-        "sets": 8192,
-        "ways": 24,
+        "sets": 1024,
+        "ways": 8,
         "rq_size": 32,
         "wq_size": 32,
         "pq_size": 16,
         "mshr_size": 64,
-        "latency": 14,
+        "latency": 8,
         "max_read": 1,
         "max_write": 1,
         "prefetch_as_load": false,
@@ -138,13 +138,13 @@
 	},
 
     "LLC": {
-        "sets": 8192,
-        "ways": 32,
+        "sets": 32768,
+        "ways": 16,
         "rq_size": 32,
         "wq_size": 32,
         "pq_size": 32,
         "mshr_size": 192,
-        "latency": 44,
+        "latency": 34,
         "max_read": 1,
         "max_write": 1,
         "prefetch_as_load": false,
