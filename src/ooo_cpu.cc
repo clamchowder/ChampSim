@@ -135,8 +135,12 @@ void O3_CPU::init_instruction(ooo_model_instr arch_instr)
 
         if (arch_instr.source_registers[i])
             arch_instr.num_reg_ops++;
-        if (arch_instr.source_memory[i])
+        if (arch_instr.source_memory[i]) {
             arch_instr.num_mem_ops++;
+            // bypass an issue handling memory addresses in the zero page?
+            if (arch_instr.source_memory[i] < 4096)
+              arch_instr.source_memory[i] += 8192;
+         }
     }
 
     if (arch_instr.num_mem_ops > 0)
