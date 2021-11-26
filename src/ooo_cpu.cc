@@ -10,6 +10,7 @@
 extern uint8_t warmup_complete[NUM_CPUS];
 extern uint8_t knob_cloudsuite;
 extern uint8_t MAX_INSTR_DESTINATIONS;
+extern uint64_t zero_page_fix;
 
 extern VirtualMemory vmem;
 
@@ -95,6 +96,12 @@ void O3_CPU::init_instruction(ooo_model_instr arch_instr)
         {
             arch_instr.num_mem_ops++;
 
+            // bypass an issue handling memory addresses in the zero page?
+            if (arch_instr.destination_memory[i] < 4096) {
+                arch_instr.destination_memory[i] += 8192;
+                zero_page_fix++;
+            }
+
             // update STA, this structure is required to execute store instructions properly without deadlock
             if (arch_instr.num_mem_ops > 0)
             {
@@ -138,8 +145,10 @@ void O3_CPU::init_instruction(ooo_model_instr arch_instr)
         if (arch_instr.source_memory[i]) {
             arch_instr.num_mem_ops++;
             // bypass an issue handling memory addresses in the zero page?
-            if (arch_instr.source_memory[i] < 4096)
+            if (arch_instr.source_memory[i] < 4096) {
               arch_instr.source_memory[i] += 8192;
+              zero_page_fix++;
+            }
          }
     }
 

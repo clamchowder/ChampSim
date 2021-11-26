@@ -27,6 +27,8 @@ uint64_t warmup_instructions     = 1000000,
          simulation_instructions = 10000000,
          champsim_seed;
 
+uint64_t zero_page_fix = 0;
+
 time_t start_time;
 
 extern CACHE LLC;
@@ -479,6 +481,7 @@ int main(int argc, char** argv)
                 cout << "Heartbeat CPU " << i << " instructions: " << ooo_cpu[i]->num_retired << " cycles: " << ooo_cpu[i]->current_cycle;
                 cout << " heartbeat IPC: " << heartbeat_ipc << " cumulative IPC: " << cumulative_ipc; 
                 cout << " (Simulation time: " << elapsed_hour << " hr " << elapsed_minute << " min " << elapsed_second << " sec) " << endl;
+                cout << " Zero page address overrides: " << zero_page_fix << endl;
                 ooo_cpu[i]->next_print_instruction += STAT_PRINTING_PERIOD;
 
                 ooo_cpu[i]->last_sim_instr = ooo_cpu[i]->num_retired;

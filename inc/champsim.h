@@ -31,6 +31,7 @@
 using namespace std;
 
 extern uint8_t warmup_complete[NUM_CPUS];
+extern uint64_t zero_page_fix;
 void print_deadlock(uint32_t i);
 #endif
 
