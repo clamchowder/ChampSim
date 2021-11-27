@@ -84,8 +84,8 @@
     },
 
     "ITLB": {
-        "sets": 16,
-        "ways": 4,
+        "sets": 64,
+        "ways": 64,
         "rq_size": 16,
         "wq_size": 16,
         "pq_size": 0,
@@ -97,8 +97,8 @@
     },
 
     "DTLB": {
-        "sets": 16,
-        "ways": 4,
+        "sets": 64,
+        "ways": 64,
         "rq_size": 16,
         "wq_size": 16,
         "pq_size": 0,
