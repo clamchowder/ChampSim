@@ -1,5 +1,5 @@
 {
-    "executable_name": "bin/glc",
+    "executable_name": "bin/glc_32k",
     "block_size": 64,
     "page_size": 4096,
     "heartbeat_frequency": 10000000,
@@ -55,12 +55,12 @@
 
     "L1D": {
         "sets": 64,
-        "ways": 12,
+        "ways": 8,
         "rq_size": 64,
         "wq_size": 64,
         "pq_size": 8,
         "mshr_size": 16,
-        "latency": 5,
+        "latency": 4,
         "max_read": 3,
         "max_write": 2,
         "prefetch_as_load": false,
