@@ -74,7 +74,7 @@
         "rq_size": 32,
         "wq_size": 32,
         "pq_size": 16,
-        "mshr_size": 64,
+        "mshr_size": 48,
         "latency": 8,
         "max_read": 1,
         "max_write": 1,
@@ -84,8 +84,8 @@
     },
 
     "ITLB": {
-        "sets": 1,
-        "ways": 64,
+        "sets": 32,
+        "ways": 8,
         "rq_size": 16,
         "wq_size": 16,
         "pq_size": 0,
@@ -97,8 +97,8 @@
     },
 
     "DTLB": {
-        "sets": 1,
-        "ways": 64,
+        "sets": 16,
+        "ways": 6,
         "rq_size": 16,
         "wq_size": 16,
         "pq_size": 0,
@@ -116,7 +116,7 @@
         "wq_size": 32,
         "pq_size": 0,
         "mshr_size": 16,
-        "latency": 8,
+        "latency": 7,
         "max_read": 1,
         "max_write": 1,
         "prefetch_as_load": false
