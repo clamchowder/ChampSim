@@ -142,6 +142,15 @@ void print_branch_stats()
     }
 }
 
+void print_extra_stats()
+{
+    for (uint32_t i = 0; i < NUM_CPUS; i++) 
+    {
+        cout << "CPU " << i << " ROB full dispatch stall cycles: ";
+	cout << 100 * ((float)ooo_cpu[i]->dispatch_stall_rob_full / ooo_cpu[i]->current_cycle) << endl;
+    }
+}
+
 void print_dram_stats()
 {
     uint64_t total_congested_cycle = 0;
@@ -223,6 +232,9 @@ void finish_warmup()
         ooo_cpu[i]->num_branch = 0;
         ooo_cpu[i]->branch_mispredictions = 0;
 	ooo_cpu[i]->total_rob_occupancy_at_branch_mispredict = 0;
+
+	// reset extra stats
+	ooo_cpu[i]->dispatch_stall_rob_full = 0;
 
 	for(uint32_t j=0; j<8; j++)
 	  {
@@ -575,6 +587,7 @@ int main(int argc, char** argv)
     LLC.llc_replacement_final_stats();
     print_dram_stats();
     print_branch_stats();
+    print_extra_stats();
 #endif
 
     return 0;

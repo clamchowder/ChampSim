@@ -528,10 +528,18 @@ void O3_CPU::dispatch_instruction()
     // dispatch DISPATCH_WIDTH instructions into the ROB
     while (available_dispatch_bandwidth > 0 && DISPATCH_BUFFER.has_ready() && !ROB.full())
     {
-        // Add to ROB
-        ROB.push_back(DISPATCH_BUFFER.front());
-        DISPATCH_BUFFER.pop_front();
-	available_dispatch_bandwidth--;
+        if (!ROB.full()) {
+            // Add to ROB
+            ROB.push_back(DISPATCH_BUFFER.front());
+            DISPATCH_BUFFER.pop_front();
+            available_dispatch_bandwidth--;
+        }
+	else 
+	{
+	    // dispatch stall, ROB full
+            dispatch_stall_rob_full++;
+            break;
+	}
     }
 
     DISPATCH_BUFFER.operate();
