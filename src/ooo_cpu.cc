@@ -524,6 +524,11 @@ void O3_CPU::dispatch_instruction()
         return;
 
     std::size_t available_dispatch_bandwidth = DISPATCH_WIDTH;
+  
+    if (ROB.full()) 
+    {
+        dispatch_stall_rob_full++;
+    } 
 
     // dispatch DISPATCH_WIDTH instructions into the ROB
     while (available_dispatch_bandwidth > 0 && DISPATCH_BUFFER.has_ready() && !ROB.full())
@@ -534,12 +539,6 @@ void O3_CPU::dispatch_instruction()
             DISPATCH_BUFFER.pop_front();
             available_dispatch_bandwidth--;
         }
-	else 
-	{
-	    // dispatch stall, ROB full
-            dispatch_stall_rob_full++;
-            break;
-	}
     }
 
     DISPATCH_BUFFER.operate();
@@ -657,6 +656,7 @@ void O3_CPU::do_memory_scheduling(champsim::circular_buffer<ooo_model_instr>::it
     uint32_t num_mem_ops = 0, num_added = 0;
 
     // load
+    // loop through all of the instruction's source operands, and add ones that have memory as a source
     for (uint32_t i=0; i<NUM_INSTR_SOURCES; i++) {
         if (rob_it->source_memory[i]) {
             num_mem_ops++;
