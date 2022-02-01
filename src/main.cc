@@ -146,8 +146,8 @@ void print_extra_stats()
 {
     for (uint32_t i = 0; i < NUM_CPUS; i++) 
     {
-        cout << "CPU " << i << " ROB full dispatch stall cycles: ";
-	cout << 100 * ((float)ooo_cpu[i]->dispatch_stall_rob_full / ooo_cpu[i]->current_cycle) << endl;
+        cout << "CPU " << i << " ROB full dispatch stall cycles: " << ooo_cpu[i]->dispatch_stall_rob_full << " cycles ";
+	cout << 100 * ((float)ooo_cpu[i]->dispatch_stall_rob_full / ooo_cpu[i]->current_cycle) << "%" << endl;
     }
 }
 
