@@ -149,6 +149,12 @@ void print_extra_stats()
         cout << "CPU " << i << " ROB full dispatch stall cycles: " << ooo_cpu[i]->dispatch_stall_rob_full << " cycles ";
 	cout << 100 * ((float)ooo_cpu[i]->dispatch_stall_rob_full / ooo_cpu[i]->current_cycle) << "%" << endl;
     }
+
+    cout << "CPU 0 ROB occupancy:" << endl;
+    for (uint32_t i = 0; i < ooo_cpu[0]->rob_size; i++) 
+    {
+        cout << i << ": " << ooo_cpu[0]->rob_occupancy[i] << endl;
+    }
 }
 
 void print_dram_stats()

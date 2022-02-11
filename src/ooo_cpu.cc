@@ -541,6 +541,14 @@ void O3_CPU::dispatch_instruction()
         }
     }
 
+    if (rob_occupancy == NULL)
+    {
+        rob_occupancy = (uint64_t *)calloc(ROB.size(), sizeof(uint64_t));
+        rob_size = ROB.size();
+    }
+
+    rob_occupancy[ROB.occupancy()]++; 
+
     DISPATCH_BUFFER.operate();
 }
 

@@ -83,6 +83,8 @@ class O3_CPU : public champsim::operable {
     uint64_t num_branch = 0, branch_mispredictions = 0;
     uint64_t total_rob_occupancy_at_branch_mispredict;
     uint64_t dispatch_stall_rob_full = 0;
+    uint64_t *rob_occupancy = NULL;
+    uint64_t rob_size = 0;
 
     uint64_t total_branch_types[8] = {};
     uint64_t branch_type_misses[8] = {};
